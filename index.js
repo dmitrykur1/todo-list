@@ -23,19 +23,29 @@ output.onclick = function (event) {
     if (!confirm('подтвердите удаление')) {
       return;
     }
-    removedTodo = listOfTodo.splice(index, 1);
+    removedTodo = listOfTodo.splice(index, 1)[0];
     console.log("> onRemove -> listOfTodo", listOfTodo);
     renderUserNotification(index, 10);
+    renderTodoList(output, listOfTodo);
   } else if (role == 'edit') {
     const text = prompt();
     if (text.length > 1) {
-      listOfTodo[index] = text;
+      listOfTodo[index].text = text;
       renderTodoList(output, listOfTodo);
     } else {
       alert(
         "Sorry the length of the text does not conform with required length"
       );
     }
+  } else if (role == 'complete') {
+    const completed = listOfTodo[index].completed;
+    if (completed) {
+      listOfTodo[index].completed = false;
+    } else {
+      listOfTodo[index].completed = true;
+      listOfTodo[index].date = new Date();
+    }
+    renderTodoList(output, listOfTodo);
   }
 };
 
@@ -52,11 +62,11 @@ button.onclick = addTodo;
 notification.onclick = function (event) {
   const target = event.target;
   const index = target.dataset.index;
-  console.log(target, index)
   if (!!index && Number.isFinite(parseInt(index))) {
     clearTimeout(timeout);
+    console.log(removedTodo)
     listOfTodo.splice(index, 0, removedTodo);
-    removedTodo = '';
+    removedTodo = null;
     notification.innerHTML = '';
     renderTodoList(output, listOfTodo);
   }
@@ -65,7 +75,11 @@ notification.onclick = function (event) {
 function addTodo() {
   const text = input.value;
   if (text.length > 1) {
-    listOfTodo.push(text);
+    const todo = {
+      text: text,
+      completed: false
+    }
+    listOfTodo.push(todo);
     renderTodoList(output, listOfTodo);
   } else {
     alert(
@@ -86,14 +100,27 @@ function renderTodoList(output, list) {
 }
 
 function renderTodoItem(index, value) {
-  return(
-    `<div id='todo_${index}'>
-      <input type='checkbox' />
-      <button data-index='${index}' data-role='delete'>x</button>
-      <span>${index + 1}. ${value}</span>
-      <button data-index='${index}' data-role='edit'>Edit</button>
-    </div>`
-  );
+  console.log(value)
+  if (value.completed) {
+    return(
+      `<div id='todo_${index}' style="color: grey;">
+        <input data-index='${index}' type='checkbox' data-role='complete' checked/>
+        <button data-index='${index}' data-role='delete'>x</button>
+        <span>${index + 1}. ${value.text}</span>
+        ${value.date.toLocaleString('ru-RU').slice(0, -3)}
+      </div>`
+    );
+  } else {
+    return(
+      `<div id='todo_${index}'>
+        <input data-index='${index}' type='checkbox' data-role='complete'/>
+        <button data-index='${index}' data-role='delete'>x</button>
+        <span>${index + 1}. ${value.text}</span>
+        <button data-index='${index}' data-role='edit'>Edit</button>
+      </div>`
+    )
+  }
+
 }
 
 function isEventWithSpecialButtonPressed(e, buttonKey) {
