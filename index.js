@@ -13,8 +13,12 @@ let listOfTodo = [];
 output.onclick = function (event) {
   const target = event.target;
   const index = target.dataset.index;
+  const role = target.dataset.role;
   console.log("> onRemove -> event", { index, bool: !!index });
-  if (!!index && Number.isFinite(parseInt(index))) {
+  if (!!index && Number.isFinite(parseInt(index)) && role == 'delete') {
+    if (!confirm('подтвердите удаление')) {
+      return;
+    }
     listOfTodo.splice(index, 1);
     console.log("> onRemove -> listOfTodo", listOfTodo);
     renderTodoList(output, listOfTodo);
@@ -59,7 +63,7 @@ function renderTodoItem(index, value) {
   return(
     `<div id='todo_${index}'>
       <input type='checkbox' />
-      <button data-index='${index}'>x</button>
+      <button data-index='${index}' data-role='delete'>x</button>
       <span>${index + 1}. ${value}</span>
       <button data-index='${index}'>Edit</button>
     </div>`
