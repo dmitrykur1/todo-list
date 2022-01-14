@@ -58,8 +58,10 @@ function renderTodoList(output, list) {
 function renderTodoItem(index, value) {
   return(
     `<div id='todo_${index}'>
+      <input type='checkbox' />
       <button data-index='${index}'>x</button>
       <span>${index + 1}. ${value}</span>
+      <button data-index='${index}'>Edit</button>
     </div>`
   );
 }
