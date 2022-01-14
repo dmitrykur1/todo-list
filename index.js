@@ -25,8 +25,17 @@ output.onclick = function (event) {
     }
     removedTodo = listOfTodo.splice(index, 1);
     console.log("> onRemove -> listOfTodo", listOfTodo);
-    renderTodoList(output, listOfTodo);
     renderUserNotification(index, 10);
+  } else if (role == 'edit') {
+    const text = prompt();
+    if (text.length > 1) {
+      listOfTodo[index] = text;
+      renderTodoList(output, listOfTodo);
+    } else {
+      alert(
+        "Sorry the length of the text does not conform with required length"
+      );
+    }
   }
 };
 
@@ -55,7 +64,7 @@ notification.onclick = function (event) {
 
 function addTodo() {
   const text = input.value;
-  if (text.length > 0) {
+  if (text.length > 1) {
     listOfTodo.push(text);
     renderTodoList(output, listOfTodo);
   } else {
@@ -82,7 +91,7 @@ function renderTodoItem(index, value) {
       <input type='checkbox' />
       <button data-index='${index}' data-role='delete'>x</button>
       <span>${index + 1}. ${value}</span>
-      <button data-index='${index}'>Edit</button>
+      <button data-index='${index}' data-role='edit'>Edit</button>
     </div>`
   );
 }
